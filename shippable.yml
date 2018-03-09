@@ -1,0 +1,40 @@
+language: none
+
+build:
+  ci:
+    - echo "building"
+  post_ci:
+    - if [ "$BRANCH" == "master" ]; then shipctl post_resource_state image_1 versionName $BRANCH.$BUILD_NUMBER; fi
+    - if [ "$BRANCH" == "dev" ]; then shipctl post_resource_state image_2 versionName $BRANCH.$BUILD_NUMBER; fi
+
+resources:
+    - name: image_1
+      type: image
+      integration: dockerhub
+      versionTemplate:
+        sourceName: "library/node"
+        versionName: "master.1"
+
+    - name: image_2
+      type: image
+      integration: dockerhub
+      versionTemplate:
+        sourceName: "library/node"
+        versionName: "master.1"
+
+jobs:
+  - name: multi-branch-image-resource-sample_runCI
+    type: runCI
+    steps:
+      - OUT: image_1
+      - OUT: image_2  
+
+  - name: manifest_job_1
+    type: manifest
+    steps:
+      - IN: image_1
+
+  - name: manifest_job_2
+    type: manifest
+    steps:
+      - IN: image_2
