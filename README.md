@@ -1,0 +1,1 @@
+# multi-branch-image-resource-sample
